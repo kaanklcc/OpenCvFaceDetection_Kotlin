@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">OpenCVFaceDetection</string>
+    <string name="kimlikDogrulamaYazi">Kimlik Kartı Doğrulama</string>
+    <string name="kimlikHazırlamaUyari">Lütfen Kimliğinizin arka yüzünü hazırlayınız ve kamerayı aç butonuna tıklayınız. Kamera kimliğinizi okuyana kadar sabit tutunuz.</string>
+    <string name="kamerayiAc">Kamerayı Aç</string>
+
+    <string name="kimlikHazirlama">Kimliğinizi hazırlayın</string>
+    <string name="NfcKimlikUyari">"Kimlik kartınızı telefonun ön yüzeyinde kamera hizasında okuma başlayana kadar turunuz. Hata almanız durumunda,telfonunuzun kılıfı varsa çıkarıp tekrar deneyiniz."</string>
+
+    <string name="nfcDogrula">NFC ile Doğrula</string>
+    <string name="KimlikKartıOkutma">Kimlik Kartı Okutma</string>
+    <string name="YüzTanıma">Yüz Tanıma</string>
+    <string name="İşlemebaşlamadanönceTCKimlikKartınızıhazırlayınız.">İşleme başlamadan önce TC Kimlik Kartınızı hazırlayınız.</string>
+    <string name="KimliğimiTara">Kimliğimi Tara</string>
+    <string name="FotoğrafÇek">Fotoğraf Çek</string>
+    <string name="YüzAlgılanıyor...">Yüz Algılanıyor...</string>
+    <string name="YüzDoğrulama">Yüz Doğrulama</string>
+
+    <string name="YüzUyari">"Lütfen gün ışığının yoğun olmadığı bir konumda işleminizi yapınız.Güneş gözlüğü, maske ve bere gibi aksesuar kullanıyorsanız yüz tanıma işlemine başlamadan çıkartınız."</string>
+    <string name="checkbox">VISIGHT TEKNOLOJİ tarafından kişisel verilerimin işlenmesini kabul ediyorum</string>
+    <string name="DEVAM">DEVAM</string>
+    <string name="HATA">HATA</string>
+    <string name="TekrarDeneyiniz">Tekrar Deneyiniz.</string>
+    <string name="İPTAL">İPTAL.</string>
+    <string name="maksimumDeneme">Maksimum Deneme Sayısına Ulaştınız..</string>
+    <string name="ONAY">ONAY.</string>
+    <string name="GenelDogrulamaYazi">Kimlik Doğrulama Başarıyla Onaylandı.</string>
+    <string name="Tamam">Tamam.</string>
+    <string name="başarisiz">Kimlik Doğrulama Başarısız. Tekrar Deneyin..</string>
+
 </resources>

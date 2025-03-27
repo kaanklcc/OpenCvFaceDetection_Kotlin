@@ -24,3 +24,4 @@ include(":app")
 
 include(":openCV")
 project(":openCV").projectDir = File(rootDir, "sdk/")
+include(":kaan")
