@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Kaan\OpenCvFaceDetection_Kotlin\sdk\.cxx\Debug\2p4b3g6v\arm64-v8a'
+ninja: no work to do.
