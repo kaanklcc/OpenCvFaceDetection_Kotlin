@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
     private val matchViewModel by viewModels<MatchViewModel>()
     private val authenticationViewModel by viewModels<AuthenticationViewModel>()
     private val tfLiteViewModel by viewModels<TFLiteViewModel>()
-    //kaankiliccc
+    //kaankilicccc
 
 
 
