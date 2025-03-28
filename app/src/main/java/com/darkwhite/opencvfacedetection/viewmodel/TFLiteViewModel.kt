@@ -14,6 +14,8 @@ import kotlin.math.sqrt
 
 class TFLiteViewModel : ViewModel() {
 
+    //kaan
+
     private val _resultMessage = MutableLiveData<String?>()
     val resultMessage: LiveData<String?> = _resultMessage
 
