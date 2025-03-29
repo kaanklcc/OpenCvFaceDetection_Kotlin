@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
     private val matchViewModel by viewModels<MatchViewModel>()
     private val authenticationViewModel by viewModels<AuthenticationViewModel>()
     private val tfLiteViewModel by viewModels<TFLiteViewModel>()
+
     //kaankilicccc
 
 
@@ -68,11 +69,19 @@ class MainActivity : ComponentActivity() {
         // Modeli yükleyip log mesaji ver
         val mobileFaceNetModel = TFLiteHelper.loadModelFile(this, "mobileFaceNet.tflite")
         val retinaFaceModel = TFLiteHelper.loadModelFile(this, "RetinaFaceMobileNet-1080x1920.tflite")
+        val livenessModel = TFLiteHelper.loadModelFile(this, "efficientnet-lite3-int8.tflite")
+
 
         if (mobileFaceNetModel != null) {
             Log.d("ModelTest", "✅ MobileFaceNet başarıyla yüklendi!")
         } else {
             Log.e("ModelTest", "❌ MobileFaceNet yüklenemedi!")
+        }
+
+        if (livenessModel != null) {
+            Log.d("ModelTest", "✅ livenessModel başarıyla yüklendi!")
+        } else {
+            Log.e("ModelTest", "❌ livenessModel yüklenemedi!")
         }
 
         if (retinaFaceModel != null) {
@@ -117,7 +126,8 @@ class MainActivity : ComponentActivity() {
                     faceScreenViewModel,
                     matchViewModel,
                     authenticationViewModel,
-                    tfLiteViewModel
+                    tfLiteViewModel,
+
                 )
 
 

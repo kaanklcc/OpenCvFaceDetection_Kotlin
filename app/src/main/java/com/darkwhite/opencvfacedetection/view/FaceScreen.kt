@@ -1,5 +1,6 @@
 package com.darkwhite.opencvfacedetection.view
 
+import LivenessViewModel
 import android.content.Context
 import android.util.Log
 import androidx.camera.core.CameraSelector
@@ -9,6 +10,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,7 +54,6 @@ import androidx.camera.core.ImageCaptureException
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -90,6 +92,7 @@ import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 
+
 @Composable
 fun FaceScreen(
     navController: NavController,
@@ -119,9 +122,16 @@ fun FaceScreen(
     var detectedFace by remember { mutableStateOf<Bitmap?>(null) }
     var detectedFaceNfc by remember { mutableStateOf<Bitmap?>(null) }
     var faceMatchScore by remember { mutableStateOf<Float?>(null) }
-    var faceMatchThreshold = 0.6f
+    var faceMatchThreshold = 0.7f
 
-   /* LaunchedEffect(responseMessage.value) {
+    val livenessViewModel: LivenessViewModel = viewModel()
+    val livenessResult = livenessViewModel.livenessResult.observeAsState()
+
+    LaunchedEffect(Unit) {
+        livenessViewModel.loadModel(context)
+    }
+
+    LaunchedEffect(responseMessage.value) {
         when (responseMessage.value) {
             "EŞLEŞTİRME BAŞARILI",
             "EŞLEŞTİRME BAŞARISIZ",
@@ -131,20 +141,7 @@ fun FaceScreen(
                 }
             }
         }
-    }*/
-
-    LaunchedEffect(resultMessage) {
-        tfLiteViewModel.setResultMessage(resultMessage) // Yeni eklenen fonksiyon
-        when (resultMessage) {
-            "Yüzler eşleşiyor",
-            "Yüzler eşleşmiyor" -> {
-                navController.navigate("faceVerification") {
-                    popUpTo("faceScreen") { inclusive = true }
-                }
-            }
-        }
     }
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
@@ -179,9 +176,14 @@ fun FaceScreen(
 
                             if (detectedFace == null) {
                                 resultMessage = "Yüz tespit edilemedi, lütfen tekrar deneyin"
-                                resultMessage= tfLiteViewModel.resultMessage.value.toString()
                                 isProcessing = false
                                 return@let
+                            }
+
+                            // Run liveness detection on the detected face
+                            detectedFace?.let { faceBitmap ->
+                                livenessViewModel.runLivenessDetection(faceBitmap)
+                                Log.d("LivenessCheck", "Liveness detection triggered on detected face")
                             }
 
                             val resizedBitmap = detectedFace?.let { resizeBitmap(it, 224, 224) }
@@ -202,30 +204,22 @@ fun FaceScreen(
                                     val selfieBitmap = detectedFace!!.copy(Bitmap.Config.ARGB_8888, true)
 
                                     val modelFile = loadModelFile(context, "mobileFaceNet.tflite")
+                                    val interpreter = Interpreter(modelFile)
 
-                                    val model = FaceRecognitionModel(context)
-                                    val interpreter = model.getInterpreter()
-
-                                    //val interpreter = Interpreter(modelFile)
-
-                                    val similarity = tfLiteViewModel.getFaceSimilarity(nfcFaceBitmap, selfieBitmap, interpreter!!)
+                                    val similarity = tfLiteViewModel.getFaceSimilarity(nfcFaceBitmap, selfieBitmap, interpreter)
                                     faceMatchScore = similarity
 
-                                    if (similarity >= faceMatchThreshold) {
-                                        resultMessage = "Yüzler eşleşiyor"
-                                        //resultMessage = "Yüzler eşleşiyor (Benzerlik: ${String.format("%.2f", similarity)})"
+                                    if (similarity > faceMatchThreshold) {
+                                        resultMessage = "Yüzler eşleşiyor (Benzerlik: ${String.format("%.2f", similarity)})"
                                         Log.d("FaceRecognition", "Yüzler eşleşiyor! Skor: $similarity")
                                     } else {
-                                        resultMessage = "Yüzler eşleşmiyor"
-                                        //resultMessage = "Yüzler eşleşmiyor (Benzerlik: ${String.format("%.2f", similarity)})"
+                                        resultMessage = "Yüzler eşleşmiyor (Benzerlik: ${String.format("%.2f", similarity)})"
                                         Log.d("FaceRecognition", "Yüzler eşleşmiyor! Skor: $similarity")
                                     }
 
-                                    //interpreter.close()
-                                    model.close()
+                                    interpreter.close()
                                 } ?: run {
                                     resultMessage = "Kimlik kartında yüz verisi bulunamadı"
-                                    resultMessage= tfLiteViewModel.resultMessage.value.toString()
                                 }
                             }
                         } catch (e: Exception) {
@@ -339,6 +333,39 @@ fun FaceScreen(
                     fontSize = 18.sp,
                     color = if (score > faceMatchThreshold) Color.Green else Color.Red
                 )
+            }
+        }
+
+        livenessResult.value?.let { result ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .background(
+                        color = if (result.isRealFace) Color(0x880A6E00) else Color(0x88C80000),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(16.dp)
+                    .align(Alignment.TopCenter)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = if (result.isRealFace) "Gerçek Yüz Tespit Edildi ✅" else "Sahte Yüz Tespit Edildi ❌",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
+
+                    Text(
+                        text = "Canlılık Skoru: ${String.format("%.2f", result.score)}",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -457,7 +484,7 @@ fun FacePreviewScreen(detectedFace: Bitmap?) {
         faceBitmap = detectedFace
     }
 
-   /* Column(
+    Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -474,6 +501,9 @@ fun FacePreviewScreen(detectedFace: Bitmap?) {
                     .border(2.dp, Color.Red, CircleShape)
             )
         } ?: Text("Yüz Bulunamadı!", color = Color.Red)
-    }*/
+    }
 }
+
+
+
 

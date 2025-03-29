@@ -125,4 +125,11 @@ dependencies {
     implementation (project(":openCV"))
 
     implementation("org.tensorflow:tensorflow-lite-gpu:2.9.0")
+
+
+
+
+
+
+
 }

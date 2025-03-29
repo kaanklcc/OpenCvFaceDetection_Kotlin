@@ -23,7 +23,8 @@ fun SayfaGecisleri(
     faceScreenViewModel: FaceScreenViewModel,
     matchViewModel: MatchViewModel,
     authenticationViewModel: AuthenticationViewModel,
-    tfLiteViewModel: TFLiteViewModel
+    tfLiteViewModel: TFLiteViewModel,
+
 
 
 
